@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 {
     'name':         'IT Admin PAC',
-    'version': '    14.03',
+    'version': '    15.01',
     'description':  ''' 
                     Agrega a IT Admin como un PAC adicional para el timbrado de documentos.
                     ''',
