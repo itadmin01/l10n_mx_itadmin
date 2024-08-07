@@ -1,6 +1,7 @@
 import base64
 import requests
 import json
+from collections import defaultdict
 
 from odoo import models,_
 from odoo.exceptions import UserError
@@ -61,26 +62,25 @@ class AccountEdiFormat(models.Model):
                 'cfdi_str': base64.decodebytes(json_response.get('factura_xml').encode('UTF-8')),
             }
 
-    def _it_admin_cancel(self, uuid, company, credentials, uuid_replace=None):
-
-        certificates = company.l10n_mx_edi_certificate_ids
+    def _it_admin_cancel(self, company, credentials, uuid, cancel_reason, cancel_uuid=None):
+        certificates = company['root_company'].l10n_mx_edi_certificate_ids
         certificate = certificates.sudo()._get_valid_certificate()
 
         values = {
-                  'rfc': company.vat,
+                  'rfc': company['root_company'].vat,
                   'api_key': 'na', # move.company_id.proveedor_timbrado,
                   'uuid': uuid,
                   'folio': 'na', #move.folio,
                   'serie_factura': 'na', #move.company_id.serie_factura,
-                  'modo_prueba': company.l10n_mx_edi_pac_test_env,
+                  'modo_prueba': company['root_company'].l10n_mx_edi_pac_test_env,
                     'certificados': {
                           'archivo_cer': certificate.content.decode('UTF-8'),
                           'archivo_key': certificate.key.decode('UTF-8'),
                           'contrasena': certificate.password,
                     },
-                  'xml': '', #cfdi.decode("utf-8"),
-                  'motivo': "01" if uuid_replace else "02",
-                  'foliosustitucion': uuid_replace,
+                  'xml': '', #self.attachment_id.raw.decode("utf-8"),
+                  'motivo': cancel_reason, #"01" if cancel_uuid else "02",
+                  'foliosustitucion': cancel_uuid,
                   }
 
         try:
