@@ -10,9 +10,7 @@
                     <page name="info_cdfi" string="IT Admin PAC">
                             <group cols="4"  string="Timbres">
                                 <group>
-                                    <field name="saldo_timbres"/> <!--
-                                    <field name="saldo_alarma"/>
-                                    <field name="correo_alarma"/> -->
+                                    <field name="saldo_timbres"/>
                                     <button name="button_dummy2"
                                         string="Revisar saldo" type="object" class="oe_edit_only oe_inline oe_highlight" style="margin-left: 10px;"/>
                                 </group>
