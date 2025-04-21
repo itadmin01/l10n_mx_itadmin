@@ -13,15 +13,15 @@ class AccountEdiFormat(models.Model):
         if company.l10n_mx_edi_pac_test_env:
             return {
                 'username': company.l10n_mx_edi_pac_username,
-                'sign_url': 'http://facturacion.itadmin.com.mx/api/invoice',
-                'cancel_url': 'http://facturacion.itadmin.com.mx/api/refund',
+                'sign_url': 'https://facturacion.itadmin.com.mx/api/invoice',
+                'cancel_url': 'https://facturacion.itadmin.com.mx/api/refund',
                 'modo_prueba': company.l10n_mx_edi_pac_test_env,
             }
         else:
             return {
                 'username': company.l10n_mx_edi_pac_username,
-                'sign_url': 'http://facturacion.itadmin.com.mx/api/invoice',
-                'cancel_url': 'http://facturacion.itadmin.com.mx/api/refund',
+                'sign_url': 'https://facturacion.itadmin.com.mx/api/invoice',
+                'cancel_url': 'https://facturacion.itadmin.com.mx/api/refund',
                 'modo_prueba': company.l10n_mx_edi_pac_test_env,
             }
 
@@ -37,7 +37,7 @@ class AccountEdiFormat(models.Model):
                     }
                  }
         try:
-            response = requests.post(credentials['sign_url'],auth=None,verify=False, data=json.dumps(values),headers={"Content-type": "application/json"})
+            response = requests.post(credentials['sign_url'],auth=None, data=json.dumps(values),headers={"Content-type": "application/json"})
         except Exception as e:
             error = str(e)
             if "Name or service not known" in error or "Failed to establish a new connection" in error:
@@ -84,7 +84,7 @@ class AccountEdiFormat(models.Model):
                   }
 
         try:
-            response = requests.post(credentials['cancel_url'],auth=None,verify=False, data=json.dumps(values),headers={"Content-type": "application/json"})
+            response = requests.post(credentials['cancel_url'],auth=None, data=json.dumps(values),headers={"Content-type": "application/json"})
         except Exception as e:
             error = str(e)
             if "Name or service not known" in error or "Failed to establish a new connection" in error:

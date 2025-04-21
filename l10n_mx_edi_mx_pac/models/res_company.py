@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, api, models, _
+from odoo.exceptions import UserError
 import base64
 import json
 import requests
@@ -10,22 +11,12 @@ class ResCompany(models.Model):
 
     l10n_mx_edi_pac = fields.Selection(selection_add=[('it_admin', 'IT Admin')])
     saldo_timbres =  fields.Float(string=_('Saldo de timbres'), readonly=True)
-#    saldo_alarma =  fields.Float(string=_('Alarma timbres'), default=10)
-#    correo_alarma =  fields.Char(string=_('Correo de alarma'))
 
     @api.model
     def get_saldo_by_cron2(self):
         companies = self.search([('l10n_mx_edi_pac', '!=', 'it_admin')])
         for company in companies:
             company.get_saldo()
-#            if company.saldo_timbres < company.saldo_alarma and company.correo_alarma:
-#                email_template = self.env.ref("nomina_cfdi_ee.email_template_alarma_de_saldo",False)
-#                if not email_template:return
-#                emails = company.correo_alarma.split(",")
-#                for email in emails:
-#                    email = email.strip()
-#                    if email:
-#                        email_template.send_mail(company.id, force_send=True,email_values={'email_to':email})
         return True
 
     def get_saldo2(self):
@@ -35,9 +26,9 @@ class ResCompany(models.Model):
                  'modo_prueba': False,
                  }
         url=''
-        url = '%s' % ('http://facturacion.itadmin.com.mx/api/saldo')
+        url = '%s' % ('https://facturacion.itadmin.com.mx/api/saldo')
         try:
-            response = requests.post(url,auth=None,verify=False, data=json.dumps(values),headers={"Content-type": "application/json"})
+            response = requests.post(url,auth=None, data=json.dumps(values),headers={"Content-type": "application/json"})
             json_response = response.json()
         except Exception as e:
             print(e)
