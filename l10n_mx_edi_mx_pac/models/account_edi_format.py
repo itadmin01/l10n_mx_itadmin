@@ -68,6 +68,7 @@ class AccountEdiFormat(models.Model):
         cer_pem = base64.b64decode(certificate_sudo.pem_certificate)
         key_pem = base64.b64decode(certificate_sudo.private_key_id.pem_key)
 
+        _logger.info('cfdi_values %s, credentials %s, uuid %s, cancel_reason %s, cancel_uuid %s', cfdi_values, credentials, uuid, cancel_reason, cancel_uuid)
         values = {
                   'rfc': company.vat,
                   'api_key': 'na', # move.company_id.proveedor_timbrado,
@@ -87,12 +88,18 @@ class AccountEdiFormat(models.Model):
 
         try:
             response = requests.post(credentials['cancel_url'],auth=None, data=json.dumps(values),headers={"Content-type": "application/json"})
+
         except Exception as e:
             error = str(e)
             if "Name or service not known" in error or "Failed to establish a new connection" in error:
                 raise UserError("Servidor fuera de servicio, favor de intentar mas tarde")
             else:
                 raise UserError(error)
+
+        _logger.info('response %s', response)
+
+        if "Whoops, looks like something went wrong." in response.text:
+            raise UserError("Error en el proceso de timbrado, espere un minuto y vuelva a intentar timbrar nuevamente. \nSi el error aparece varias veces reportarlo con la persona de sistemas.")
 
         json_response = response.json()
 
