@@ -69,6 +69,7 @@ class AccountEdiFormat(models.Model):
         key_pem = base64.b64decode(certificate_sudo.private_key_id.pem_key)
 
         _logger.info('cfdi_values %s, credentials %s, uuid %s, cancel_reason %s, cancel_uuid %s', cfdi_values, credentials, uuid, cancel_reason, cancel_uuid)
+        _logger.info('attachment_id %s ', self.attachment_id.raw.decode())
         values = {
                   'rfc': company.vat,
                   'api_key': 'na', # move.company_id.proveedor_timbrado,
@@ -81,8 +82,8 @@ class AccountEdiFormat(models.Model):
                           'archivo_key': '', #key_pem,
                           'contrasena': '',
                     },
-                  'xml': '', #self.attachment_id.raw.decode("utf-8"),
-                  'motivo': cancel_reason, #"01" if cancel_uuid else "02",
+                  'xml': self.attachment_id.raw.decode(),
+                  'motivo': cancel_reason,
                   'foliosustitucion': cancel_uuid,
                   }
 
