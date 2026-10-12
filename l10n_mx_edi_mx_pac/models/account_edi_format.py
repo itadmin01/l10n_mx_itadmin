@@ -65,8 +65,6 @@ class AccountEdiFormat(models.Model):
     def _it_admin_cancel(self, cfdi_values, credentials, uuid, cancel_reason, cancel_uuid=None):
         company = cfdi_values['root_company']
         certificate_sudo = cfdi_values['certificate'].sudo()
-        cer_pem = base64.b64decode(certificate_sudo.pem_certificate)
-        key_pem = base64.b64decode(certificate_sudo.private_key_id.pem_key)
 
         values = {
                   'rfc': company.vat,
@@ -76,15 +74,14 @@ class AccountEdiFormat(models.Model):
                   'serie_factura': 'na', #move.company_id.serie_factura,
                   'modo_prueba': company.l10n_mx_edi_pac_test_env,
                     'certificados': {
-                          'archivo_cer': cer_pem.decode(),
-                          'archivo_key': key_pem.decode(),
+                          'archivo_cer': certificate_sudo.content.decode(),
+                          'archivo_key': certificate_sudo.private_key_id.content.decode(),
                           'contrasena': certificate_sudo.private_key_id.password,
                     },
                   'xml': self.attachment_id.datas.decode(),
                   'motivo': cancel_reason,
                   'foliosustitucion': cancel_uuid,
                   }
-
         try:
             response = requests.post(credentials['cancel_url'],auth=None, data=json.dumps(values),headers={"Content-type": "application/json"})
         except Exception as e:
