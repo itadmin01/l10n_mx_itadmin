@@ -96,12 +96,14 @@ class AccountEdiFormat(models.Model):
 
         json_response = response.json()
 
+        errors = []
         if json_response['estado_factura'] == 'problemas_factura':
-            raise UserError(_(json_response['problemas_message']))
-        elif json_response['estado_factura'] == 'solicitud_cancelar':
-            raise UserError(_(json_response['problemas_message']))
-        elif json_response.get('factura_xml', False):
-            return {'success': True}
+            errors.append(_("Code : %s", json_response['problemas_message']))
+            errors.append(_("Message : %s", json_response['problemas_message']))
+        if errors:
+            return {'errors': errors}
+        return {}
+
 
     @api.model
     def _get_pac_method_map(self):
